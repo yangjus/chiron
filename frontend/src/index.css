@@ -18,6 +18,15 @@ body {
     margin: 10px;
   }
 
+  .card {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-h3 {
+    margin: 0;
+  }
+
   .parent-container {
         display: flex;
         flex-direction: row;
