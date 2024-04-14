@@ -164,7 +164,7 @@ function App() {
     .then((user_condition) => {
       console.log("Parsed User Condition: ", user_condition);
       condition = user_condition;
-      return getClinicalTrials(user_condition, 4 || process.env.REACT_APP_NUM_CLINICAL_TRIALS);
+      return getClinicalTrials(user_condition, 2 || process.env.REACT_APP_NUM_CLINICAL_TRIALS);
     })
     .then((response) => {
       console.log("NCT IDs: ", response);
