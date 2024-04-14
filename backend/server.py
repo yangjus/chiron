@@ -54,6 +54,47 @@ def get_summary():
     are the keys and the content of each section are the values. Do not include backticks in the response. Data to summarize: """.format(diagnosis)
     response = model.generate_content(prompt + json.dumps(json_data))
     return jsonify({"response": response.text})
+
+@app.route('/get_overall_summary', methods=['POST'])
+def get_overall_summary():
+    data = request.json
+    json_data = data.get('json_data')
+    # diagnosis = data.get('diagnosis')
+    understanding = data.get('understanding')
+    purpose = data.get('purpose')
+    depth = data.get('depth')
+    minimum = 0
+    maximum = 100
+    if depth == "medium":
+        minimum = 100
+        maximum = 200
+    elif depth == "high":
+        minimum = 200
+        maximum = 300
+    key = data.get('key')
+    genai.configure(api_key=key)
+
+    preprompt = """
+                You are an AI model designed to summarize the results from multiple clinical trials. \
+                Provide an overview of the current status of the available drugs regarding the medical condition and provide me with a list of options.\
+                Do not provide any headers or dividers. Summarize the following JSON files of clinical trials MUST be between {} and {} words. \
+                Provide a high-level overview of my options and talk about the main findings and side effects of each drug. \
+                Do not include backticks in the response.
+                """.format(minimum, maximum)
+
+    model = genai.GenerativeModel(
+        "models/gemini-1.5-pro-latest",
+        system_instruction = preprompt + system_instr[understanding] + purpose_instr[purpose],
+        safety_settings = {
+            'HATE': 'BLOCK_NONE',
+            'HARASSMENT': 'BLOCK_NONE',
+            'SEXUAL' : 'BLOCK_NONE',
+            'DANGEROUS' : 'BLOCK_NONE'
+        }
+    )
+    # prompt = json.stringify(json_data)
+    response = model.generate_content(json.dumps(json_data))
+    return jsonify({"response": response.text})
  
      
 # Running app
